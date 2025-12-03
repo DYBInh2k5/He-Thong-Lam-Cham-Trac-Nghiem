@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Làm Bài Thi - Học Sinh</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #f5576c;
+            margin-bottom: 10px;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+        }
+        
+        .question-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .question-number {
+            color: #f5576c;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        
+        .question-content {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .choice {
+            padding: 15px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .choice:hover {
+            border-color: #f5576c;
+            background: #fff5f7;
+        }
+        
+        .choice input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            color: white;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+        }
+        
+        #examSection, #resultSection {
+            display: none;
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .score {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .detail-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .correct {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        
+        .wrong {
+            color: #f44336;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-btn">← Quay lại</a>
+        <h1>👨‍🎓 Làm Bài Thi</h1>
+        
+        <!-- Phần nhập thông tin -->
+        <div id="infoSection">
+            <p style="color: #666; margin-bottom: 30px;">Nhập thông tin để bắt đầu làm bài</p>
+            
+            <div class="form-group">
+                <label>Mã đề thi:</label>
+                <input type="text" id="examId" placeholder="Ví dụ: E3BEFA722">
+            </div>
+            
+            <div class="form-group">
+                <label>Mã học sinh:</label>
+                <input type="text" id="studentId" placeholder="Ví dụ: HS001">
+            </div>
+            
+            <button class="btn" onclick="loadExam()">Bắt Đầu Làm Bài</button>
+        </div>
+        
+        <!-- Phần làm bài -->
+        <div id="examSection">
+            <h2 id="examTitle" style="color: #f5576c; margin-bottom: 30px;"></h2>
+            <div id="questions"></div>
+            <button class="btn" onclick="submitExam()">Nộp Bài</button>
+        </div>
+        
+        <!-- Phần kết quả -->
+        <div id="resultSection">
+            <div class="result-card">
+                <h2>Kết Quả Bài Thi</h2>
+                <div class="score" id="score"></div>
+                <p id="summary"></p>
+            </div>
+            
+            <h3 style="margin-bottom: 20px;">Chi Tiết Từng Câu:</h3>
+            <div id="details"></div>
+            
+            <button class="btn" onclick="location.reload()">Làm Bài Khác</button>
+        </div>
+    </div>
+    
+    <script>
+        let currentExam = null;
+        
+        async function loadExam() {
+            const examId = document.getElementById('examId').value;
+            const studentId = document.getElementById('studentId').value;
+            
+            if (!examId || !studentId) {
+                alert('Vui lòng nhập đầy đủ thông tin!');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/get-exam/${examId}`);
+                const data = await response.json();
+                
+                if (!data.success) {
+                    alert('Không tìm thấy đề thi: ' + examId);
+                    return;
+                }
+                
+                currentExam = data.exam;
+                document.getElementById('examTitle').textContent = currentExam.title;
+                
+                // Hiển thị câu hỏi
+                const questionsDiv = document.getElementById('questions');
+                questionsDiv.innerHTML = '';
+                
+                currentExam.questions.forEach((q, index) => {
+                    questionsDiv.innerHTML += `
+                        <div class="question-card">
+                            <div class="question-number">Câu ${index + 1}</div>
+                            <div class="question-content">${q.content}</div>
+                            <div class="choices">
+                                ${Object.entries(q.choices).map(([key, value]) => `
+                                    <label class="choice">
+                                        <input type="radio" name="q${index}" value="${key}">
+                                        <span><strong>${key}.</strong> ${value}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('infoSection').style.display = 'none';
+                document.getElementById('examSection').style.display = 'block';
+            } catch (error) {
+                alert('Lỗi kết nối: ' + error);
+            }
+        }
+        
+        async function submitExam() {
+            const studentId = document.getElementById('studentId').value;
+            const answers = {};
+            
+            // Lấy đáp án
+            currentExam.questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected) {
+                    answers[q.question_id] = selected.value;
+                }
+            });
+            
+            // Kiểm tra đã trả lời hết chưa
+            if (Object.keys(answers).length < currentExam.questions.length) {
+                if (!confirm('Bạn chưa trả lời hết các câu. Vẫn muốn nộp bài?')) {
+                    return;
+                }
+            }
+            
+            try {
+                const response = await fetch('/api/submit-exam', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        exam_id: currentExam.exam_id,
+                        student_id: studentId,
+                        answers: answers
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult(data.result);
+                } else {
+                    alert('Lỗi: ' + data.message);
+                }
+            } catch (error) {
+                alert('Lỗi kết nối: ' + error);
+            }
+        }
+        
+        function showResult(result) {
+            document.getElementById('examSection').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'block';
+            
+            document.getElementById('score').textContent = result.score + '/10';
+            document.getElementById('summary').textContent = 
+                `Đúng ${result.correct_answers}/${result.total_questions} câu - Sai ${result.wrong_answers}/${result.total_questions} câu`;
+            
+            const detailsDiv = document.getElementById('details');
+            detailsDiv.innerHTML = '';
+            
+            result.details.forEach((detail, index) => {
+                const statusClass = detail.is_correct ? 'correct' : 'wrong';
+                const statusText = detail.is_correct ? '✓ ĐÚNG' : '✗ SAI';
+                
+                detailsDiv.innerHTML += `
+                    <div class="detail-card">
+                        <div>
+                            <strong>Câu ${index + 1}:</strong>
+                            Bạn chọn: <strong>${detail.student_answer || '(Không trả lời)'}</strong>
+                            - Đáp án đúng: <strong>${detail.correct_answer}</strong>
+                        </div>
+                        <div class="${statusClass}">${statusText}</div>
+                    </div>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

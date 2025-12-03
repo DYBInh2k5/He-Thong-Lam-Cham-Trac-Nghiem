@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo Đề Thi - Giáo Viên</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border 0.3s;
+        }
+        
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .question-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .question-header {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        .choices {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .choice-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .choice-input label {
+            margin: 0;
+            min-width: 30px;
+        }
+        
+        .correct-answer {
+            margin-top: 15px;
+        }
+        
+        .correct-answer select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            font-size: 1em;
+        }
+        
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .success-message {
+            background: #4caf50;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .error-message {
+            background: #f44336;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-btn">← Quay lại</a>
+        <h1>👨‍🏫 Tạo Đề Thi Mới</h1>
+        <p style="color: #666; margin-bottom: 30px;">Nhập thông tin đề thi và 4 câu hỏi</p>
+        
+        <form id="examForm">
+            <div class="form-group">
+                <label>Tên đề thi:</label>
+                <input type="text" id="examTitle" required placeholder="Ví dụ: Đề thi Toán học">
+            </div>
+            
+            <div class="form-group">
+                <label>Mã giáo viên:</label>
+                <input type="text" id="teacherId" required placeholder="Ví dụ: GV001">
+            </div>
+            
+            <div class="form-group">
+                <label>Số câu hỏi:</label>
+                <input type="number" id="numQuestions" min="1" max="50" value="4" required>
+                <button type="button" class="btn" style="margin-top: 10px; width: auto; padding: 10px 30px;" onclick="generateQuestions()">Tạo Form Câu Hỏi</button>
+            </div>
+            
+            <div id="questions"></div>
+            
+            <button type="submit" class="btn">✓ Tạo Đề Thi</button>
+        </form>
+        
+        <div id="successMessage" class="success-message"></div>
+        <div id="errorMessage" class="error-message"></div>
+    </div>
+    
+    <script>
+        let currentNumQuestions = 0;
+        
+        // Tạo form câu hỏi
+        function generateQuestions() {
+            const numQuestions = parseInt(document.getElementById('numQuestions').value);
+            
+            if (numQuestions < 1 || numQuestions > 50) {
+                alert('Số câu hỏi phải từ 1 đến 50!');
+                return;
+            }
+            
+            currentNumQuestions = numQuestions;
+            const questionsDiv = document.getElementById('questions');
+            questionsDiv.innerHTML = '';
+            
+            for (let i = 1; i <= numQuestions; i++) {
+                questionsDiv.innerHTML += `
+                <div class="question-card">
+                    <div class="question-header">Câu ${i}</div>
+                    <div class="form-group">
+                        <label>Nội dung câu hỏi:</label>
+                        <textarea id="q${i}_content" rows="2" required placeholder="Nhập câu hỏi..."></textarea>
+                    </div>
+                    <div class="choices">
+                        <div class="choice-input">
+                            <label>A:</label>
+                            <input type="text" id="q${i}_a" required placeholder="Đáp án A">
+                        </div>
+                        <div class="choice-input">
+                            <label>B:</label>
+                            <input type="text" id="q${i}_b" required placeholder="Đáp án B">
+                        </div>
+                        <div class="choice-input">
+                            <label>C:</label>
+                            <input type="text" id="q${i}_c" required placeholder="Đáp án C">
+                        </div>
+                        <div class="choice-input">
+                            <label>D:</label>
+                            <input type="text" id="q${i}_d" required placeholder="Đáp án D">
+                        </div>
+                    </div>
+                    <div class="correct-answer">
+                        <label>Đáp án đúng:</label>
+                        <select id="q${i}_correct" required>
+                            <option value="">-- Chọn đáp án đúng --</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            }
+        }
+        
+        // Tạo form mặc định 4 câu khi load trang
+        window.onload = function() {
+            generateQuestions();
+        };
+        
+        // Xử lý submit form
+        document.getElementById('examForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (currentNumQuestions === 0) {
+                alert('Vui lòng tạo form câu hỏi trước!');
+                return;
+            }
+            
+            const title = document.getElementById('examTitle').value;
+            const teacherId = document.getElementById('teacherId').value;
+            
+            const questions = [];
+            for (let i = 1; i <= currentNumQuestions; i++) {
+                questions.push({
+                    content: document.getElementById(`q${i}_content`).value,
+                    choices: {
+                        A: document.getElementById(`q${i}_a`).value,
+                        B: document.getElementById(`q${i}_b`).value,
+                        C: document.getElementById(`q${i}_c`).value,
+                        D: document.getElementById(`q${i}_d`).value
+                    },
+                    correct_answer: document.getElementById(`q${i}_correct`).value
+                });
+            }
+            
+            try {
+                const response = await fetch('/api/create-exam', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({title, teacher_id: teacherId, questions})
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('successMessage').innerHTML = `
+                        ✓ Tạo đề thi thành công!<br>
+                        <strong>Mã đề thi: ${data.exam_id}</strong><br>
+                        <small>Lưu lại mã này để học sinh làm bài</small>
+                    `;
+                    document.getElementById('examForm').reset();
+                } else {
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('errorMessage').textContent = '✗ ' + data.message;
+                }
+            } catch (error) {
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('errorMessage').textContent = '✗ Lỗi kết nối: ' + error;
+            }
+        });
+    </script>
+</body>
+</html>
